@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Windows 11 Payment</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(0, 120, 212, 0.30),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(124, 77, 255, 0.22),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #eef6ff,
+                    #dfefff
+                );
+
+            color: #1a1a1a;
+        }
+
+        /* Background */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: .30;
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 350px;
+            height: 350px;
+            background: #0078d4;
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 300px;
+            height: 300px;
+            background: #7c4dff;
+            right: -80px;
+            bottom: -80px;
+        }
+
+        /* Main Window */
+        .window {
+            width: min(600px, 100%);
+
+            background: rgba(255, 255, 255, .76);
+
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+
+            border: 1px solid rgba(255, 255, 255, .9);
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 30px 80px rgba(0, 50, 100, .18),
+                0 5px 20px rgba(0, 0, 0, .08);
+
+            overflow: hidden;
+        }
+
+        /* Title Bar */
+        .titlebar {
+            height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 18px;
+
+            border-bottom: 1px solid rgba(0, 0, 0, .08);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 14px;
+        }
+
+        /* Windows Logo */
+        .windows-logo {
+            width: 24px;
+            height: 24px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+
+            gap: 2px;
+        }
+
+        .windows-logo span {
+            background: #0078d4;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        /* Content */
+        .content {
+            padding: 35px;
+            text-align: center;
+        }
+
+        .payment-icon {
+            width: 55px;
+            height: 55px;
+
+            margin: 0 auto 15px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 15px;
+
+            background: rgba(0, 120, 212, .10);
+
+            color: #0078d4;
+
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 27px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* Amount */
+        .amount {
+            margin: 0 auto 20px;
+
+            padding: 16px 25px;
+
+            width: fit-content;
+            min-width: 230px;
+
+            background: rgba(0, 120, 212, .08);
+
+            border: 1px solid rgba(0, 120, 212, .12);
+
+            border-radius: 14px;
+        }
+
+        .amount span {
+            display: block;
+
+            font-size: 12px;
+            color: #666;
+
+            margin-bottom: 4px;
+        }
+
+        .amount strong {
+            font-size: 30px;
+            color: #0078d4;
+            font-weight: 700;
+        }
+
+        /* Countdown */
+        .countdown-box {
+            background: rgba(255, 255, 255, .65);
+
+            border: 1px solid rgba(255, 255, 255, .9);
+
+            border-radius: 15px;
+
+            padding: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .countdown-label {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 7px;
+        }
+
+        #countdown {
+            font-size: 36px;
+
+            font-weight: 700;
+
+            color: #0078d4;
+
+            letter-spacing: 2px;
+        }
+
+        .expires {
+            margin-top: 5px;
+
+            font-size: 12px;
+
+            color: #777;
+        }
+
+        /* QR Code */
+        .qr-container {
+            width: 280px;
+            height: 280px;
+
+            margin: 0 auto;
+
+            padding: 15px;
+
+            background: white;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, .10);
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            transition: .3s;
+        }
+
+        .qr-container img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            border-radius: 5px;
+        }
+
+        .scan-text {
+            margin-top: 18px;
+
+            font-size: 14px;
+
+            color: #555;
+        }
+
+        /* Payment Information */
+        .payment-info {
+            margin-top: 25px;
+
+            padding: 16px;
+
+            border-radius: 12px;
+
+            background: rgba(0, 120, 212, .07);
+
+            font-size: 13px;
+
+            color: #555;
+        }
+
+        .payment-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 5px 0;
+        }
+
+        .payment-row strong {
+            color: #222;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            margin-top: 22px;
+        }
+
+        .back-btn,
+        .continue-btn {
+            display: inline-block;
+
+            padding: 11px 22px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+        /* Back */
+        .back-btn {
+            background: rgba(255, 255, 255, .8);
+
+            border: 1px solid #ddd;
+
+            color: #333;
+        }
+
+        .back-btn:hover {
+            background: white;
+
+            transform: translateY(-1px);
+        }
+
+        /* Continue */
+        .continue-btn {
+            background: #0078d4;
+
+            border: 1px solid #0078d4;
+
+            color: white;
+
+            box-shadow:
+                0 5px 15px rgba(0, 120, 212, .20);
+        }
+
+        .continue-btn:hover {
+            background: #0067b8;
+
+            transform: translateY(-1px);
+        }
+
+        /* Expired */
+        .expired {
+            color: #d13438 !important;
+        }
+
+        .qr-expired {
+            opacity: .25;
+            filter: grayscale(1);
+        }
+
+        .expired-message {
+            display: none;
+
+            margin-top: 12px;
+
+            color: #d13438;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        .expired-message.show {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            padding: 15px 25px;
+
+            border-top: 1px solid rgba(0, 0, 0, .07);
+
+            color: #777;
+
+            font-size: 11px;
+
+            text-align: center;
+        }
+
+        /* Mobile */
+        @media (max-width: 500px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .content {
+                padding: 25px 18px;
+            }
+
+            .qr-container {
+                width: 240px;
+                height: 240px;
+            }
+
+            #countdown {
+                font-size: 30px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .amount strong {
+                font-size: 27px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .back-btn,
+            .continue-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+
+    <!-- Main Window -->
+    <div class="window">
+
+        <!-- Windows 11 Title Bar -->
+        <div class="titlebar">
+
+            <div class="app-title">
+
+                <div class="windows-logo">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <span>Windows 11 Payment</span>
+
+            </div>
+
+            <div class="controls">
+                <span>−</span>
+                <span>□</span>
+                <span>×</span>
+            </div>
+
+        </div>
+
+
+        <!-- Payment Content -->
+        <div class="content">
+
+            <div class="payment-icon">
+                ₹
+            </div>
+
+
+            <h1>
+                Complete Payment
+            </h1>
+
+
+            <p class="subtitle">
+                Scan the QR code below to complete your payment
+            </p>
+
+
+            <!-- Amount -->
+            <div class="amount">
+
+                <span>
+                    Amount to Pay
+                </span>
+
+                <strong>
+                    ₹1,299
+                </strong>
+
+            </div>
+
+
+            <!-- Countdown -->
+            <div class="countdown-box">
+
+                <div class="countdown-label">
+                    PAYMENT SESSION EXPIRES IN
+                </div>
+
+                <div id="countdown">
+                    05:00
+                </div>
+
+                <div class="expires">
+                    Please complete your payment before the timer expires.
+                </div>
+
+            </div>
+
+
+            <!-- QR Code -->
+            <div
+                class="qr-container"
+                id="qrContainer">
+
+                <!--
+                    Put your QR code here:
+
+                    payment.html
+                    qr.png
+                -->
+
+                <img
+                    src="./image.png"
+                    alt="Payment QR Code"
+                    id="qrCode">
+
+            </div>
+
+
+            <!-- Expired Message -->
+            <div
+                class="expired-message"
+                id="expiredMessage">
+
+                Payment session expired.
+                Please go back and try again.
+
+            </div>
+
+
+            <p class="scan-text">
+                Open your UPI app and scan this QR code
+            </p>
+
+
+            <!-- Payment Information -->
+            <div class="payment-info">
+
+                <div class="payment-row">
+
+                    <span>
+                        Payment Method
+                    </span>
+
+                    <strong>
+                        UPI
+                    </strong>
+
+                </div>
+
+
+                <div class="payment-row">
+
+                    <span>
+                        Amount
+                    </span>
+
+                    <strong>
+                        ₹1,299
+                    </strong>
+
+                </div>
+
+
+                <div class="payment-row">
+
+                    <span>
+                        Status
+                    </span>
+
+                    <strong>
+                        Waiting for payment
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Back + Continue -->
+            <div class="button-group">
+
+                <a
+                    href="./index.html"
+                    class="back-btn">
+
+                    ← Back
+
+                </a>
+
+
+                <a
+                    href="./success.html"
+                    class="continue-btn">
+
+                    Continue →
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Footer -->
+        <footer>
+            Secure Payment • Windows 11 Interface
+        </footer>
+
+    </div>
+
+
+    <script>
+
+        /*
+        =====================================
+        COUNTDOWN
+        =====================================
+
+        Current timer = 5 minutes
+
+        Change 5 to:
+        10 = 10 minutes
+        15 = 15 minutes
+        30 = 30 minutes
+        */
+
+        let totalSeconds = 5 * 60;
+
+
+        const countdown =
+            document.getElementById("countdown");
+
+        const qrContainer =
+            document.getElementById("qrContainer");
+
+        const expiredMessage =
+            document.getElementById("expiredMessage");
+
+
+        function updateCountdown() {
+
+            const minutes =
+                Math.floor(totalSeconds / 60);
+
+            const seconds =
+                totalSeconds % 60;
+
+
+            countdown.textContent =
+                String(minutes).padStart(2, "0")
+                + ":"
+                + String(seconds).padStart(2, "0");
+
+
+            /* Timer expired */
+
+            if (totalSeconds <= 0) {
+
+                countdown.textContent =
+                    "EXPIRED";
+
+                countdown.classList.add(
+                    "expired"
+                );
+
+
+                qrContainer.classList.add(
+                    "qr-expired"
+                );
+
+
+                expiredMessage.classList.add(
+                    "show"
+                );
+
+
+                clearInterval(timer);
+
+                return;
+            }
+
+
+            totalSeconds--;
+
+        }
+
+
+        /* Start countdown */
+
+        updateCountdown();
+
+
+        const timer =
+            setInterval(
+                updateCountdown,
+                1000
+            );
+
+    </script>
+
+</body>
+</html>

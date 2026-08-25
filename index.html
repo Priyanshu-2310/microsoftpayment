@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 11 — System Information</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(0, 120, 212, 0.30), transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(76, 175, 255, 0.20), transparent 30%),
+                linear-gradient(135deg, #eef6ff, #dfefff);
+
+            color: #1a1a1a;
+        }
+
+        /* Windows-like background */
+        .background {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: .35;
+        }
+
+        .orb.one {
+            width: 350px;
+            height: 350px;
+            background: #0078d4;
+            top: -100px;
+            left: -80px;
+        }
+
+        .orb.two {
+            width: 300px;
+            height: 300px;
+            background: #7c4dff;
+            right: -80px;
+            bottom: -80px;
+        }
+
+        /* Main window */
+        .window {
+            width: min(1150px, 94%);
+            margin: 35px auto;
+            background: rgba(255, 255, 255, .72);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,.8);
+            border-radius: 18px;
+            box-shadow:
+                0 30px 80px rgba(0, 50, 100, .18),
+                0 5px 20px rgba(0,0,0,.08);
+            overflow: hidden;
+        }
+
+        /* Title bar */
+        .titlebar {
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+            border-bottom: 1px solid rgba(0,0,0,.08);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .windows-logo {
+            width: 24px;
+            height: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+        }
+
+        .windows-logo span {
+            background: #0078d4;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            color: #555;
+        }
+
+        .control {
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        /* Header */
+        .hero {
+            padding: 40px 45px 25px;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* Status */
+        .status {
+            margin-top: 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 14px;
+            background: rgba(16, 124, 16, .10);
+            border-radius: 20px;
+            color: #107c10;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #16a34a;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #16a34a;
+        }
+
+        /* Content */
+        .content {
+            padding: 10px 45px 45px;
+        }
+
+        .section-title {
+            margin: 25px 0 14px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .card {
+            background: rgba(255,255,255,.65);
+            border: 1px solid rgba(255,255,255,.9);
+            border-radius: 14px;
+            padding: 20px;
+            transition: .2s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,.04);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,.08);
+        }
+
+        .card.full {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            border: 1px solid #d5dbe2;
+            background: rgba(255,255,255,.8);
+            padding: 12px 13px;
+            border-radius: 9px;
+            font-size: 14px;
+            outline: none;
+            transition: .2s;
+            color: #222;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0,120,212,.12);
+        }
+
+        /* Timeline */
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .timeline-item {
+            padding: 17px;
+            background: rgba(255,255,255,.55);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.9);
+        }
+
+        .timeline-item small {
+            color: #777;
+            font-size: 11px;
+        }
+
+        .timeline-item strong {
+            display: block;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .secondary {
+            background: rgba(255,255,255,.8);
+            border: 1px solid #ddd;
+        }
+
+        .primary {
+            background: #0078d4;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,120,212,.25);
+        }
+
+        .primary:hover {
+            background: #0067b8;
+            transform: translateY(-1px);
+        }
+
+        .secondary:hover {
+            background: white;
+        }
+
+        /* Footer */
+        footer {
+            padding: 18px 45px;
+            border-top: 1px solid rgba(0,0,0,.07);
+            color: #777;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Responsive */
+        @media(max-width: 750px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card.full {
+                grid-column: span 1;
+            }
+
+            .timeline {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .hero,
+            .content {
+                padding-left: 22px;
+                padding-right: 22px;
+            }
+
+            footer {
+                padding-left: 22px;
+                padding-right: 22px;
+            }
+        }
+
+        @media(max-width: 500px) {
+            .timeline {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="background">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+</div>
+
+<div class="window">
+
+    <!-- Windows Title Bar -->
+    <div class="titlebar">
+
+        <div class="app-title">
+
+            <div class="windows-logo">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <span>System Information</span>
+
+        </div>
+
+        <div class="controls">
+            <span class="control">−</span>
+            <span class="control">□</span>
+            <span class="control">×</span>
+        </div>
+
+    </div>
+
+
+    <!-- Header -->
+    <div class="hero">
+
+        <h1>Windows 11</h1>
+
+        <p>
+            System registration and purchase information
+        </p>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            System Active
+        </div>
+
+    </div>
+
+
+    <div class="content">
+
+        <!-- Account -->
+        <div class="section-title">
+            Account Information
+        </div>
+
+        <div class="grid">
+
+            <div class="card">
+                <label>Gmail Account</label>
+                <input
+                    type="email"
+                    id="gmail"
+                    placeholder="example@gmail.com">
+            </div>
+
+            <div class="card">
+                <label>Microsoft Account</label>
+                <input
+                    type="email"
+                    placeholder="Microsoft account email">
+            </div>
+
+            <div class="card">
+                <label>Account Created Date</label>
+                <input type="date" id="accountDate">
+            </div>
+
+            <div class="card">
+                <label>Last Account Login</label>
+                <input type="datetime-local" id="loginDate">
+            </div>
+
+        </div>
+
+
+        <!-- Purchase -->
+        <div class="section-title">
+            Purchase Information
+        </div>
+
+        <div class="grid">
+
+            <div class="card">
+                <label>Windows Purchased Date</label>
+                <input type="date" id="purchaseDate">
+            </div>
+
+            <div class="card">
+                <label>Purchase Time</label>
+                <input type="time">
+            </div>
+
+            <div class="card">
+                <label>Purchase Order ID</label>
+                <input
+                    type="text"
+                    placeholder="Enter order ID">
+            </div>
+
+            <div class="card">
+                <label>Purchase Source</label>
+
+                <select>
+                    <option>Select source</option>
+                    <option>Microsoft Store</option>
+                    <option>Amazon</option>
+                    <option>Flipkart</option>
+                    <option>Retail Store</option>
+                    <option>Other</option>
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- Windows -->
+        <div class="section-title">
+            Windows Information
+        </div>
+
+        <div class="grid">
+
+            <div class="card">
+                <label>Currently Installed Windows</label>
+
+                <select>
+                    <option>Windows 11 Home</option>
+                    <option>Windows 11 Pro</option>
+                    <option>Windows 11 Enterprise</option>
+                    <option>Windows 11 Education</option>
+                </select>
+
+            </div>
+
+            <div class="card">
+                <label>Windows Version</label>
+
+                <input
+                    type="text"
+                    value="24H2"
+                    placeholder="e.g. 24H2">
+            </div>
+
+            <div class="card">
+                <label>Installation Date</label>
+                <input type="date" id="installDate">
+            </div>
+
+            <div class="card">
+                <label>Last Windows Update</label>
+                <input type="date">
+            </div>
+
+            <div class="card full">
+                <label>Windows Product Key</label>
+
+                <input
+                    type="text"
+                    placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX">
+            </div>
+
+        </div>
+
+
+        <!-- PC -->
+        <div class="section-title">
+            Device Information
+        </div>
+
+        <div class="grid">
+
+            <div class="card">
+                <label>Device Name</label>
+                <input
+                    type="text"
+                    placeholder="DESKTOP-XXXXXXX">
+            </div>
+
+            <div class="card">
+                <label>Manufacturer</label>
+
+                <select>
+                    <option>Select manufacturer</option>
+                    <option>Microsoft</option>
+                    <option>HP</option>
+                    <option>Dell</option>
+                    <option>Lenovo</option>
+                    <option>ASUS</option>
+                    <option>Acer</option>
+                </select>
+            </div>
+
+            <div class="card">
+                <label>Processor</label>
+                <input
+                    type="text"
+                    placeholder="Intel Core / AMD Ryzen">
+            </div>
+
+            <div class="card">
+                <label>RAM</label>
+
+                <select>
+                    <option>4 GB</option>
+                    <option>8 GB</option>
+                    <option>16 GB</option>
+                    <option>32 GB</option>
+                    <option>64 GB</option>
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- Date Timeline -->
+        <div class="section-title">
+            Important Dates
+        </div>
+
+        <div class="timeline">
+
+            <div class="timeline-item">
+                <small>Purchase Date</small>
+                <strong id="purchaseDisplay">—</strong>
+            </div>
+
+            <div class="timeline-item">
+                <small>Installation Date</small>
+                <strong id="installDisplay">—</strong>
+            </div>
+
+            <div class="timeline-item">
+                <small>Account Created</small>
+                <strong id="accountDisplay">—</strong>
+            </div>
+
+            <div class="timeline-item">
+                <small>Today's Date</small>
+                <strong id="todayDisplay">—</strong>
+            </div>
+
+        </div>
+
+
+        <!-- Actions -->
+        <div class="actions">
+
+            <button
+                class="secondary"
+                onclick="resetForm()">
+                Reset
+            </button>
+
+            <button
+            
+                class="primary">
+               <a href="./payment.html" style = "color: white; text-decoration: none;" class="enter-btn">Enter</a>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <footer>
+        <span>Windows 11 System Information</span>
+        <span id="currentDate"></span>
+    </footer>
+
+</div>
+
+
+<script>
+
+    // Today's date
+    const today = new Date();
+
+    const formattedToday =
+        today.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+
+    document.getElementById("todayDisplay").textContent =
+        formattedToday;
+
+    document.getElementById("currentDate").textContent =
+        formattedToday;
+
+
+    // Date display helper
+    function formatDate(value) {
+
+        if (!value) return "—";
+
+        const date = new Date(value);
+
+        return date.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+
+    }
+
+
+    // Purchase date
+    document.getElementById("purchaseDate")
+        .addEventListener("change", function () {
+
+            document.getElementById("purchaseDisplay")
+                .textContent = formatDate(this.value);
+
+        });
+
+
+    // Installation date
+    document.getElementById("installDate")
+        .addEventListener("change", function () {
+
+            document.getElementById("installDisplay")
+                .textContent = formatDate(this.value);
+
+        });
+
+
+    // Account date
+    document.getElementById("accountDate")
+        .addEventListener("change", function () {
+
+            document.getElementById("accountDisplay")
+                .textContent = formatDate(this.value);
+
+        });
+
+
+    // Save
+    function saveData() {
+
+        const gmail =
+            document.getElementById("gmail").value;
+
+        if (!gmail) {
+
+            alert("Please enter Gmail account.");
+
+            return;
+
+        }
+
+        alert(
+            "Information saved successfully!"
+        );
+
+    }
+
+
+    // Reset
+    function resetForm() {
+
+        document
+            .querySelectorAll("input")
+            .forEach(input => {
+
+                if (!input.hasAttribute("value")) {
+                    input.value = "";
+                }
+
+            });
+
+        document.getElementById("purchaseDisplay")
+            .textContent = "—";
+
+        document.getElementById("installDisplay")
+            .textContent = "—";
+
+        document.getElementById("accountDisplay")
+            .textContent = "—";
+
+    }
+
+</script>
+
+</body>
+</html>

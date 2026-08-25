@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Windows 11 Activation</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 25px;
+
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(0, 120, 212, .30),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(124, 77, 255, .20),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #eef6ff,
+                    #dfefff
+                );
+
+            color: #1a1a1a;
+        }
+
+        /* Background */
+        .orb {
+            position: fixed;
+
+            border-radius: 50%;
+
+            filter: blur(90px);
+
+            opacity: .30;
+
+            z-index: -1;
+        }
+
+        .orb.one {
+            width: 350px;
+            height: 350px;
+
+            background: #0078d4;
+
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb.two {
+            width: 300px;
+            height: 300px;
+
+            background: #7c4dff;
+
+            right: -80px;
+            bottom: -80px;
+        }
+
+        /* Main Window */
+        .window {
+            width: min(650px, 100%);
+
+            background: rgba(255, 255, 255, .76);
+
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+
+            border: 1px solid rgba(255, 255, 255, .9);
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 30px 80px rgba(0, 50, 100, .18),
+                0 5px 20px rgba(0, 0, 0, .08);
+
+            overflow: hidden;
+        }
+
+        /* Title Bar */
+        .titlebar {
+            height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 18px;
+
+            border-bottom: 1px solid rgba(0, 0, 0, .08);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 14px;
+        }
+
+        /* Windows Logo */
+        .windows-logo {
+            width: 24px;
+            height: 24px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+
+            gap: 2px;
+        }
+
+        .windows-logo span {
+            background: #0078d4;
+        }
+
+        .controls {
+            display: flex;
+
+            gap: 20px;
+
+            color: #555;
+
+            font-size: 14px;
+        }
+
+        /* Content */
+        .content {
+            padding: 38px;
+
+            text-align: center;
+        }
+
+        /* Success Icon */
+        .success-icon {
+            width: 72px;
+            height: 72px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 50%;
+
+            background: rgba(16, 124, 16, .12);
+
+            color: #107c10;
+
+            font-size: 38px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 8px 25px rgba(16, 124, 16, .10);
+        }
+
+        h1 {
+            font-size: 29px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+
+            font-size: 14px;
+
+            margin-bottom: 28px;
+        }
+
+        /* Activation Status */
+        .status {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 8px 15px;
+
+            border-radius: 20px;
+
+            background: rgba(16, 124, 16, .10);
+
+            color: #107c10;
+
+            font-size: 13px;
+
+            margin-bottom: 28px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            background: #16a34a;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 8px #16a34a;
+        }
+
+        /* Information Cards */
+        .info-container {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
+
+            text-align: left;
+        }
+
+        .info-card {
+            padding: 18px;
+
+            background: rgba(255, 255, 255, .65);
+
+            border: 1px solid rgba(255, 255, 255, .9);
+
+            border-radius: 13px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, .04);
+        }
+
+        .info-card.full {
+            grid-column: span 2;
+        }
+
+        .info-label {
+            font-size: 12px;
+
+            color: #777;
+
+            margin-bottom: 7px;
+        }
+
+        .info-value {
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: #222;
+
+            word-break: break-word;
+        }
+
+        .license {
+            color: #0078d4;
+
+            font-size: 18px;
+
+            letter-spacing: 2px;
+        }
+
+        /* Windows ID */
+        .windows-id {
+            color: #444;
+
+            font-family: Consolas, monospace;
+
+            font-size: 14px;
+
+            letter-spacing: 1px;
+        }
+
+        /* Message */
+        .message {
+            margin-top: 22px;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: rgba(0, 120, 212, .07);
+
+            color: #555;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        /* Button */
+        .button {
+            display: inline-block;
+
+            margin-top: 25px;
+
+            padding: 12px 25px;
+
+            background: #0078d4;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            box-shadow:
+                0 5px 15px rgba(0, 120, 212, .20);
+
+            transition: .2s;
+        }
+
+        .button:hover {
+            background: #0067b8;
+
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 15px 25px;
+
+            border-top: 1px solid rgba(0, 0, 0, .07);
+
+            color: #777;
+
+            font-size: 11px;
+
+            text-align: center;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .content {
+                padding: 28px 18px;
+            }
+
+            .info-container {
+                grid-template-columns: 1fr;
+            }
+
+            .info-card.full {
+                grid-column: span 1;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .license {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+
+    <!-- Main Windows Window -->
+    <div class="window">
+
+        <!-- Title Bar -->
+        <div class="titlebar">
+
+            <div class="app-title">
+
+                <div class="windows-logo">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <span>Windows Activation</span>
+
+            </div>
+
+            <div class="controls">
+                <span>−</span>
+                <span>□</span>
+                <span>×</span>
+            </div>
+
+        </div>
+
+
+        <!-- Content -->
+        <div class="content">
+
+            <!-- Success Icon -->
+            <div class="success-icon">
+                ✓
+            </div>
+
+
+            <h1>
+                Activation Successful
+            </h1>
+
+
+            <p class="subtitle">
+                Windows 11 has been successfully registered.
+            </p>
+
+
+            <!-- Status -->
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                Windows Activated
+
+            </div>
+
+
+            <!-- Information -->
+            <div class="info-container">
+
+                <!-- Windows ID -->
+                <div class="info-card">
+
+                    <div class="info-label">
+                        Windows ID
+                    </div>
+
+                    <div
+                        class="info-value windows-id"
+                        id="windowsId">
+
+                        7845-2916-6382
+
+                    </div>
+
+                </div>
+
+
+                <!-- License Number -->
+                <div class="info-card">
+
+                    <div class="info-label">
+                        License Number
+                    </div>
+
+                    <div
+                        class="info-value license"
+                        id="licenseNumber">
+
+                        582941736205
+
+                    </div>
+
+                </div>
+
+
+                <!-- Windows Edition -->
+                <div class="info-card">
+
+                    <div class="info-label">
+                        Windows Edition
+                    </div>
+
+                    <div class="info-value">
+                        Windows 11 Pro
+                    </div>
+
+                </div>
+
+
+                <!-- Version -->
+                <div class="info-card">
+
+                    <div class="info-label">
+                        Windows Version
+                    </div>
+
+                    <div class="info-value">
+                        24H2
+                    </div>
+
+                </div>
+
+
+                <!-- Activation Date -->
+                <div class="info-card">
+
+                    <div class="info-label">
+                        Activation Date
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="activationDate">
+
+                        --
+
+                    </div>
+
+                </div>
+
+
+                <!-- Expiry -->
+                <div class="info-card">
+
+                    <div class="info-label">
+                        License Status
+                    </div>
+
+                    <div class="info-value">
+                        Lifetime
+                    </div>
+
+                </div>
+
+
+                <!-- Device -->
+                <div class="info-card full">
+
+                    <div class="info-label">
+                        Device
+                    </div>
+
+                    <div class="info-value">
+                        Windows 11 Desktop
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Message -->
+            <div class="message">
+
+                Your Windows activation information has been
+                successfully generated. Keep your license number
+                safe for your records.
+
+            </div>
+
+
+            <!-- Continue -->
+            <a
+                href="./index.html"
+                class="button">
+
+                Return to Windows
+
+            </a>
+
+        </div>
+
+
+        <!-- Footer -->
+        <footer>
+            Windows 11 • System Activation
+        </footer>
+
+    </div>
+
+
+    <script>
+
+        /* Current activation date */
+
+        const today = new Date();
+
+        const formattedDate =
+            today.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+
+
+        document.getElementById(
+            "activationDate"
+        ).textContent = formattedDate;
+
+
+        /*
+        Generate a random 12-digit
+        license number when page loads.
+        */
+
+        function generateLicense() {
+
+            let number = "";
+
+            for (let i = 0; i < 12; i++) {
+
+                number +=
+                    Math.floor(
+                        Math.random() * 10
+                    );
+
+            }
+
+            return number;
+        }
+
+
+        document.getElementById(
+            "licenseNumber"
+        ).textContent =
+            generateLicense();
+
+    </script>
+
+</body>
+</html>
