@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Windows 11 Activation</title>
+    <title>Windows 11 Activation </title>
 
     <style>
         * {
@@ -43,7 +43,11 @@
             color: #1a1a1a;
         }
 
-        /* Background */
+
+        /* =========================
+           BACKGROUND
+           ========================= */
+
         .orb {
             position: fixed;
 
@@ -76,41 +80,213 @@
             bottom: -80px;
         }
 
-        /* Main Window */
-        .window {
-            width: min(650px, 100%);
 
-            background: rgba(255, 255, 255, .76);
+        /* =========================
+           LOADING SCREEN
+           ========================= */
 
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+        .loading-screen {
+            position: fixed;
 
-            border: 1px solid rgba(255, 255, 255, .9);
+            inset: 0;
+
+            z-index: 9999;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            background:
+                radial-gradient(
+                    circle at 30% 20%,
+                    rgba(0,120,212,.18),
+                    transparent 35%
+                ),
+                rgba(238,246,255,.95);
+
+            backdrop-filter: blur(25px);
+
+            transition:
+                opacity .45s ease,
+                visibility .45s ease;
+        }
+
+        .loading-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-box {
+            width: min(400px, 90%);
+
+            padding: 38px 30px;
+
+            text-align: center;
+
+            background: rgba(255,255,255,.85);
+
+            border: 1px solid rgba(255,255,255,.9);
 
             border-radius: 18px;
 
             box-shadow:
-                0 30px 80px rgba(0, 50, 100, .18),
-                0 5px 20px rgba(0, 0, 0, .08);
+                0 25px 70px rgba(0,50,100,.16);
+        }
+
+
+        /* Windows Logo */
+        .loading-logo {
+            width: 42px;
+            height: 42px;
+
+            margin: 0 auto 22px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+
+            gap: 3px;
+        }
+
+        .loading-logo span {
+            background: #0078d4;
+        }
+
+
+        .loading-box h2 {
+            font-size: 21px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+        .loading-box p {
+            min-height: 20px;
+
+            color: #666;
+
+            font-size: 13px;
+        }
+
+
+        /* Spinner */
+        .spinner {
+            width: 42px;
+            height: 42px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+
+            border: 4px solid rgba(0,120,212,.15);
+
+            border-top-color: #0078d4;
+
+            animation:
+                spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* Progress */
+        .progress-container {
+            width: 100%;
+
+            height: 6px;
+
+            margin-top: 25px;
+
+            background: #e5eaf0;
+
+            border-radius: 10px;
 
             overflow: hidden;
         }
 
-        /* Title Bar */
+        .progress-bar {
+            width: 0%;
+
+            height: 100%;
+
+            background: #0078d4;
+
+            border-radius: 10px;
+
+            transition: width .05s linear;
+        }
+
+        .progress-text {
+            display: block;
+
+            margin-top: 10px;
+
+            color: #777;
+
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           MAIN WINDOW
+           ========================= */
+
+        .window {
+            width: min(650px, 100%);
+
+            background: rgba(255,255,255,.76);
+
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+
+            border: 1px solid rgba(255,255,255,.9);
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 30px 80px rgba(0,50,100,.18),
+                0 5px 20px rgba(0,0,0,.08);
+
+            overflow: hidden;
+        }
+
+
+        /* =========================
+           TITLE BAR
+           ========================= */
+
         .titlebar {
             height: 54px;
 
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
 
             padding: 0 18px;
 
-            border-bottom: 1px solid rgba(0, 0, 0, .08);
+            border-bottom:
+                1px solid rgba(0,0,0,.08);
         }
 
         .app-title {
             display: flex;
+
             align-items: center;
 
             gap: 10px;
@@ -118,7 +294,9 @@
             font-size: 14px;
         }
 
+
         /* Windows Logo */
+
         .windows-logo {
             width: 24px;
             height: 24px;
@@ -135,6 +313,7 @@
             background: #0078d4;
         }
 
+
         .controls {
             display: flex;
 
@@ -145,14 +324,20 @@
             font-size: 14px;
         }
 
-        /* Content */
+
+        /* =========================
+           CONTENT
+           ========================= */
+
         .content {
             padding: 38px;
 
             text-align: center;
         }
 
+
         /* Success Icon */
+
         .success-icon {
             width: 72px;
             height: 72px;
@@ -160,12 +345,14 @@
             margin: 0 auto 18px;
 
             display: flex;
+
             justify-content: center;
             align-items: center;
 
             border-radius: 50%;
 
-            background: rgba(16, 124, 16, .12);
+            background:
+                rgba(16,124,16,.12);
 
             color: #107c10;
 
@@ -174,8 +361,9 @@
             font-weight: bold;
 
             box-shadow:
-                0 8px 25px rgba(16, 124, 16, .10);
+                0 8px 25px rgba(16,124,16,.10);
         }
+
 
         h1 {
             font-size: 29px;
@@ -185,6 +373,7 @@
             margin-bottom: 8px;
         }
 
+
         .subtitle {
             color: #666;
 
@@ -193,7 +382,11 @@
             margin-bottom: 28px;
         }
 
-        /* Activation Status */
+
+        /* =========================
+           STATUS
+           ========================= */
+
         .status {
             display: inline-flex;
 
@@ -205,7 +398,8 @@
 
             border-radius: 20px;
 
-            background: rgba(16, 124, 16, .10);
+            background:
+                rgba(16,124,16,.10);
 
             color: #107c10;
 
@@ -226,33 +420,43 @@
                 0 0 8px #16a34a;
         }
 
-        /* Information Cards */
+
+        /* =========================
+           INFORMATION
+           ========================= */
+
         .info-container {
             display: grid;
 
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns:
+                1fr 1fr;
 
             gap: 14px;
 
             text-align: left;
         }
 
+
         .info-card {
             padding: 18px;
 
-            background: rgba(255, 255, 255, .65);
+            background:
+                rgba(255,255,255,.65);
 
-            border: 1px solid rgba(255, 255, 255, .9);
+            border:
+                1px solid rgba(255,255,255,.9);
 
             border-radius: 13px;
 
             box-shadow:
-                0 5px 20px rgba(0, 0, 0, .04);
+                0 5px 20px rgba(0,0,0,.04);
         }
+
 
         .info-card.full {
             grid-column: span 2;
         }
+
 
         .info-label {
             font-size: 12px;
@@ -261,6 +465,7 @@
 
             margin-bottom: 7px;
         }
+
 
         .info-value {
             font-size: 15px;
@@ -272,6 +477,7 @@
             word-break: break-word;
         }
 
+
         .license {
             color: #0078d4;
 
@@ -280,7 +486,7 @@
             letter-spacing: 2px;
         }
 
-        /* Windows ID */
+
         .windows-id {
             color: #444;
 
@@ -291,7 +497,11 @@
             letter-spacing: 1px;
         }
 
-        /* Message */
+
+        /* =========================
+           MESSAGE
+           ========================= */
+
         .message {
             margin-top: 22px;
 
@@ -299,7 +509,8 @@
 
             border-radius: 12px;
 
-            background: rgba(0, 120, 212, .07);
+            background:
+                rgba(0,120,212,.07);
 
             color: #555;
 
@@ -308,7 +519,11 @@
             line-height: 1.5;
         }
 
-        /* Button */
+
+        /* =========================
+           BUTTON
+           ========================= */
+
         .button {
             display: inline-block;
 
@@ -327,10 +542,12 @@
             font-size: 14px;
 
             box-shadow:
-                0 5px 15px rgba(0, 120, 212, .20);
+                0 5px 15px
+                rgba(0,120,212,.20);
 
             transition: .2s;
         }
+
 
         .button:hover {
             background: #0067b8;
@@ -338,11 +555,16 @@
             transform: translateY(-1px);
         }
 
-        /* Footer */
+
+        /* =========================
+           FOOTER
+           ========================= */
+
         footer {
             padding: 15px 25px;
 
-            border-top: 1px solid rgba(0, 0, 0, .07);
+            border-top:
+                1px solid rgba(0,0,0,.07);
 
             color: #777;
 
@@ -351,7 +573,11 @@
             text-align: center;
         }
 
-        /* Mobile */
+
+        /* =========================
+           MOBILE
+           ========================= */
+
         @media (max-width: 600px) {
 
             body {
@@ -377,9 +603,11 @@
             .license {
                 font-size: 16px;
             }
+
         }
     </style>
 </head>
+
 
 <body>
 
@@ -388,38 +616,111 @@
     <div class="orb two"></div>
 
 
-    <!-- Main Windows Window -->
+    <!-- =========================
+         3 SECOND BUFFERING
+         ========================= -->
+
+    <div
+        class="loading-screen"
+        id="loadingScreen">
+
+        <div class="loading-box">
+
+            <!-- Windows Logo -->
+            <div class="loading-logo">
+
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+
+            <!-- Spinner -->
+            <div class="spinner"></div>
+
+
+            <h2>
+                Processing...
+            </h2>
+
+
+            <p id="loadingText">
+                Preparing activation information
+            </p>
+
+
+            <!-- Progress -->
+            <div class="progress-container">
+
+                <div
+                    class="progress-bar"
+                    id="progressBar">
+                </div>
+
+            </div>
+
+
+            <span
+                class="progress-text"
+                id="progressText">
+
+                0%
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MAIN WINDOWS WINDOW
+         ========================= -->
+
     <div class="window">
 
         <!-- Title Bar -->
+
         <div class="titlebar">
 
             <div class="app-title">
 
                 <div class="windows-logo">
+
                     <span></span>
                     <span></span>
                     <span></span>
                     <span></span>
+
                 </div>
 
-                <span>Windows Activation</span>
+                <span>
+                    Windows Activation
+                </span>
 
             </div>
 
+
             <div class="controls">
+
                 <span>−</span>
                 <span>□</span>
                 <span>×</span>
+
             </div>
 
         </div>
 
 
         <!-- Content -->
+
         <div class="content">
 
+
             <!-- Success Icon -->
+
             <div class="success-icon">
                 ✓
             </div>
@@ -431,24 +732,28 @@
 
 
             <p class="subtitle">
-                Windows 11 has been successfully registered.
+                Windows 11 activation  completed successfully.
             </p>
 
 
             <!-- Status -->
+
             <div class="status">
 
                 <span class="status-dot"></span>
 
-                Windows Activated
+                 Activation Complete
 
             </div>
 
 
             <!-- Information -->
+
             <div class="info-container">
 
+
                 <!-- Windows ID -->
+
                 <div class="info-card">
 
                     <div class="info-label">
@@ -456,8 +761,7 @@
                     </div>
 
                     <div
-                        class="info-value windows-id"
-                        id="windowsId">
+                        class="info-value windows-id">
 
                         7845-2916-6382
 
@@ -467,6 +771,7 @@
 
 
                 <!-- License Number -->
+
                 <div class="info-card">
 
                     <div class="info-label">
@@ -484,7 +789,8 @@
                 </div>
 
 
-                <!-- Windows Edition -->
+                <!-- Edition -->
+
                 <div class="info-card">
 
                     <div class="info-label">
@@ -499,6 +805,7 @@
 
 
                 <!-- Version -->
+
                 <div class="info-card">
 
                     <div class="info-label">
@@ -513,6 +820,7 @@
 
 
                 <!-- Activation Date -->
+
                 <div class="info-card">
 
                     <div class="info-label">
@@ -530,7 +838,8 @@
                 </div>
 
 
-                <!-- Expiry -->
+                <!-- License Status -->
+
                 <div class="info-card">
 
                     <div class="info-label">
@@ -538,13 +847,14 @@
                     </div>
 
                     <div class="info-value">
-                        Lifetime
+                        Activated
                     </div>
 
                 </div>
 
 
                 <!-- Device -->
+
                 <div class="info-card full">
 
                     <div class="info-label">
@@ -561,16 +871,19 @@
 
 
             <!-- Message -->
+
             <div class="message">
 
-                Your Windows activation information has been
-                successfully generated. Keep your license number
-                safe for your records.
+                This page is a Windows 11-style frontend
+                demonstration. The displayed IDs and license
+                number are sample values and are not genuine
+                Microsoft activation credentials.
 
             </div>
 
 
-            <!-- Continue -->
+            <!-- Button -->
+
             <a
                 href="./index.html"
                 class="button">
@@ -583,8 +896,9 @@
 
 
         <!-- Footer -->
+
         <footer>
-            Windows 11 • System Activation
+            Windows 11 • Activation Demo
         </footer>
 
     </div>
@@ -592,7 +906,9 @@
 
     <script>
 
-        /* Current activation date */
+        /* =================================
+           ACTIVATION DATE
+           ================================= */
 
         const today = new Date();
 
@@ -612,21 +928,19 @@
         ).textContent = formattedDate;
 
 
-        /*
-        Generate a random 12-digit
-        license number when page loads.
-        */
+        /* =================================
+           12 DIGIT DEMO LICENSE NUMBER
+           ================================= */
 
-        function generateLicense() {
+        function generateDemoLicense() {
 
             let number = "";
 
             for (let i = 0; i < 12; i++) {
 
-                number +=
-                    Math.floor(
-                        Math.random() * 10
-                    );
+                number += Math.floor(
+                    Math.random() * 10
+                );
 
             }
 
@@ -637,7 +951,134 @@
         document.getElementById(
             "licenseNumber"
         ).textContent =
-            generateLicense();
+            generateDemoLicense();
+
+
+        /* =================================
+           3 SECOND BUFFERING
+           ================================= */
+
+        const loadingScreen =
+            document.getElementById(
+                "loadingScreen"
+            );
+
+        const progressBar =
+            document.getElementById(
+                "progressBar"
+            );
+
+        const progressText =
+            document.getElementById(
+                "progressText"
+            );
+
+        const loadingText =
+            document.getElementById(
+                "loadingText"
+            );
+
+
+        const messages = [
+
+            "Preparing activation information",
+
+            "Checking system details",
+
+            "Generating demo information",
+
+            "Finalizing setup"
+
+        ];
+
+
+        const duration = 3000;
+
+        const startTime = Date.now();
+
+
+        const loadingTimer =
+            setInterval(() => {
+
+                const elapsed =
+                    Date.now() - startTime;
+
+
+                let progress =
+                    Math.min(
+                        (elapsed / duration) * 100,
+                        100
+                    );
+
+
+                progress =
+                    Math.round(progress);
+
+
+                progressBar.style.width =
+                    progress + "%";
+
+
+                progressText.textContent =
+                    progress + "%";
+
+
+                /* Change message */
+
+                if (progress < 25) {
+
+                    loadingText.textContent =
+                        messages[0];
+
+                } else if (progress < 50) {
+
+                    loadingText.textContent =
+                        messages[1];
+
+                } else if (progress < 80) {
+
+                    loadingText.textContent =
+                        messages[2];
+
+                } else {
+
+                    loadingText.textContent =
+                        messages[3];
+
+                }
+
+
+                /* Finish after exactly 3 seconds */
+
+                if (elapsed >= duration) {
+
+                    clearInterval(
+                        loadingTimer
+                    );
+
+
+                    progressBar.style.width =
+                        "100%";
+
+                    progressText.textContent =
+                        "100%";
+
+
+                    loadingText.textContent =
+                        "Complete";
+
+
+                    setTimeout(() => {
+
+                        loadingScreen.classList.add(
+                            "hide"
+                        );
+
+                    }, 250);
+
+                }
+
+            }, 30);
 
     </script>
 
